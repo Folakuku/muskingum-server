@@ -8,6 +8,19 @@ const {
 // parent function that initiates the computation
 function performCalculations(time, inflow, outflow, x) {
     const deltaTime = time[1] - time[0];
+    // outflow = [
+    //     85, 91, 114, 159, 233, 324, 420, 509, 578, 623, 642, 635, 603, 546, 479,
+    //     413, 341, 274, 215, 170,
+    // ];
+
+    // inflow = [
+    //     93, 137, 208, 320, 442, 546, 630, 678, 691, 675, 634, 571, 477, 390, 329,
+    //     247, 184, 134, 108, 90,
+    // ];
+
+    // x = 0.15;
+    // const deltaTime = 3600;
+
     const { storage, weightedFlux } = calculateStorage(
         // function to calculate storage(S) and weighted flux
         inflow,
@@ -16,8 +29,11 @@ function performCalculations(time, inflow, outflow, x) {
         deltaTime
     );
 
-    let { k } = calculateK(storage, weightedFlux); // function to calculate storage time constant K
-    k = 59.873;
+    const { k, intercept } = calculateK(storage, weightedFlux); // function to calculate storage time constant K
+
+    console.log(`K: ${k},intercept: ${intercept}`);
+    console.log(`storage: ${storage}`);
+    console.log(`weightedFlux: ${weightedFlux}`);
 
     const { C0, C1, C2 } = calculateMuskingumCoefficients(k, x, deltaTime); // function to calculate muskingum coefficients
 

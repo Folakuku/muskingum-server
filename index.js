@@ -29,14 +29,13 @@ app.post("/muskingum", function (req, res) {
 });
 
 app.post("/calculate", (req, res) => {
-    const { timeValues, inflowValues, outflowValues, weightFactor } = req.body;
     const results = performCalculations(
-        timeValues,
-        inflowValues,
-        outflowValues,
-        weightFactor
+        req.body.timeValues,
+        req.body.inflowValues,
+        req.body.outflowValues,
+        req.body.weightFactor,
+        req.body.timeFactor
     );
-
     res.status(200).json({
         status: true,
         results,
@@ -50,4 +49,6 @@ app.all("*", (req, res) => {
     });
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () =>
+    console.log(`Muskingum server listening on port ${port}!`)
+);

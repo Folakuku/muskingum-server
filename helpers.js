@@ -9,10 +9,14 @@ function calculateStorage(inflow, outflow, x, deltaTime) {
     for (let i = 0; i < inflow.length; i++) {
         let IO = inflow[i] - outflow[i]; // inflow - outflow (I-O)
         IO = IO; // (I -O)
+        let num;
         let avgIO = i === 0 ? IO : (IO + (inflow[i - 1] - outflow[i - 1])) / 2; // (Avg(I -O))
         deltaS[i] = avgIO * deltaTime; // Column 6 (∆S)
-        storage.push(storage[i] + deltaS[i]); // Column 7 (S)
-        weightedFlux[i] = (x * inflow[i] + (1 - x) * outflow[i]).toFixed(4); // Column 8
+        num = Number(storage[i] + deltaS[i]).toFixed(4);
+        storage.push(Number(num)); // Column 7 (S)
+        weightedFlux[i] = Number(
+            (x * inflow[i] + (1 - x) * outflow[i]).toFixed(4)
+        ); // Column 8
     }
     storage.shift();
     return { storage, weightedFlux };
@@ -20,25 +24,11 @@ function calculateStorage(inflow, outflow, x, deltaTime) {
 
 // Using regression to compute for K using a graph of storage against weightedFlux
 function calculateK(storage, weightedFlux) {
-    const inputData = storage.map((s, index) => [s, weightedFlux[index]]);
+    const inputData = storage.map((s, index) => [weightedFlux[index], s]);
     const result = regression.linear(inputData);
-    const k = result.equation[1]; // The slope of the line
-    const intercept = result.equation[0]; // The intercept of the line
+    const k = result.equation[0]; // The slope of the line is K
+    const intercept = result.equation[1]; // The intercept of the line
     return { k, intercept };
-}
-
-function determineK(storage, weightedFlux) {
-    // Prepare data for regression analysis
-    const regressionData = storage.map((s, index) => [s, weightedFlux[index]]);
-
-    // Perform linear regression
-    const result = regression.linear(regressionData);
-
-    // The slope of the line is your K value
-    const K = result.equation[0];
-
-    // Returning the determined K value
-    return K;
 }
 
 // Function to calculate muskingum coefficients
