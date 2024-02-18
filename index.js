@@ -3,12 +3,13 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { performCalculations } = require("./controller");
 
-const app = express();
-const port = 3000;
+const app = express(); // Initialize express
+const port = 3000; // Set port for server to l
 
-app.use(bodyParser.json());
-app.use(cors());
+app.use(bodyParser.json()); // Use bodyparser middleware to enable json request
+app.use(cors()); // Use cors to enable access from frontend origin
 
+// Middleware to log requests
 app.use((req, res, next) => {
     const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
 
@@ -16,18 +17,15 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/", (req, res) => res.send("Hello World!"));
-
-app.post("/muskingum", function (req, res) {
-    const input = req.body;
-    const values = Object.entries(input);
-    console.log(values);
+// Heath check endpoint
+app.get("/", (req, res) => {
     res.status(200).json({
         status: true,
-        values,
+        message: "Server running smoothly",
     });
 });
 
+// Endpoint to run calculations
 app.post("/calculate", (req, res) => {
     const results = performCalculations(
         req.body.timeValues,
@@ -42,6 +40,7 @@ app.post("/calculate", (req, res) => {
     });
 });
 
+// Endpoint to handle 404 errors
 app.all("*", (req, res) => {
     res.status(404).json({
         status: false,
@@ -49,6 +48,7 @@ app.all("*", (req, res) => {
     });
 });
 
+// Startup server
 app.listen(port, () =>
     console.log(`Muskingum server listening on port ${port}!`)
 );

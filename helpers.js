@@ -5,7 +5,7 @@ function calculateStorage(inflow, outflow, x, deltaTime) {
     let storage = [0]; // Initial storage is usually 0
     let weightedFlux = []; // array for weightFlux result
 
-    // A loop to compute
+    // A loop to compute storage and weighted flux
     for (let i = 0; i < inflow.length; i++) {
         let IO = inflow[i] - outflow[i]; // inflow - outflow (I-O)
         IO = IO; // (I -O)
@@ -25,7 +25,7 @@ function calculateStorage(inflow, outflow, x, deltaTime) {
 // Using regression to compute for K using a graph of storage against weightedFlux
 function calculateK(storage, weightedFlux) {
     const inputData = storage.map((s, index) => [weightedFlux[index], s]);
-    const result = regression.linear(inputData);
+    const result = regression.linear(inputData); // Calculate regression
     const k = result.equation[0]; // The slope of the line is K
     const intercept = result.equation[1]; // The intercept of the line
     return { k, intercept };
@@ -41,6 +41,7 @@ function calculateMuskingumCoefficients(k, x, t) {
     return { C0, C1, C2 };
 }
 
+// Function to calculate outflow
 function calculateOutflow(inflow, C0, C1, C2) {
     let outflows = [inflow[0]]; // Initialize with the first outflow value
     let C0I2 = [0]; // Initialize with the first outflow value
@@ -58,52 +59,6 @@ function calculateOutflow(inflow, C0, C1, C2) {
     }
     return { outflows, C0I2, C1I1, C2O1 };
 }
-
-// const c = calculateC(2.3, 0.15, 1);
-function test() {
-    const Q1 = 85;
-    const k = 2.3;
-    const x = 0.15;
-    const t = 1;
-    const I = (93, 137, 208, 320);
-    const c = calculateC(k, x, t);
-}
-
-const denominator = (input) => {
-    // return input.k * (1 - input.x) + 0.5 * input.t;
-    return 2 * input.k * (1 - input.x) + input.t;
-};
-
-const getC0 = (input, d) => {
-    // const top = -input.k * input.x + 0.5 * input.t;
-    const top = -2 * input.k * input.x + input.t;
-    const res = top / d;
-    return res;
-};
-
-const getC1 = (input, d) => {
-    // const top = input.k * input.x + 0.5 * input.t;
-    const top = 2 * input.k * input.x + input.t;
-    const res = top / d;
-    return res;
-};
-
-const getC2 = (input, d) => {
-    // const top = input.k * (1 - input.x) - 0.5 * input.t;
-    const top = 2 * input.k * (1 - input.x) - input.t;
-    const res = top / d;
-    return res;
-};
-
-const calculateC = (k, x, t) => {
-    const input = { k, x, t };
-    const d = denominator({ ...input });
-    const C0 = getC0(input, d);
-    const C1 = getC1(input, d);
-    const C2 = getC2(input, d);
-    const total = C0 + C1 + C2;
-    return { C0, C1, C2, total };
-};
 
 module.exports = {
     calculateMuskingumCoefficients,
